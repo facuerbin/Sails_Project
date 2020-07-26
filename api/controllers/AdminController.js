@@ -16,6 +16,10 @@ module.exports = {
 
   procesarInicioSesion: async (peticion, respuesta) => {
     let admin = await Admin.findOne({ email: peticion.body.email, contrasena: peticion.body.contrasena })
+    if (admin != undefined && !admin.alta) {
+      peticion.addFlash('mensaje', 'Su cuenta fue desactivada por un administrador')
+      return respuesta.redirect("/admin/inicio-sesion")
+    }
     if (admin) {
       peticion.session.admin = admin
       peticion.session.cliente = undefined
@@ -35,6 +39,69 @@ module.exports = {
     }
     let fotos = await Foto.find().sort("id")
     respuesta.view('pages/admin/principal', { fotos })
+  },
+
+  clientes: async (peticion, respuesta) => {
+    if (!peticion.session || !peticion.session.admin) {
+      peticion.addFlash('mensaje', 'Sesión inválida')
+      return respuesta.redirect("/admin/inicio-sesion")
+    }
+    let clientes = await Cliente.find().sort("id")
+    respuesta.view('pages/admin/clientes', { clientes })
+  },
+
+  administradores: async (peticion, respuesta) => {
+    if (!peticion.session || !peticion.session.admin) {
+      peticion.addFlash('mensaje', 'Sesión inválida')
+      return respuesta.redirect("/admin/inicio-sesion")
+    }
+    let administradores = await Admin.find().sort("id")
+    respuesta.view('pages/admin/administradores', { administradores })
+  },
+
+  desactivarAdmin: async (peticion, respuesta) => {
+    await Admin.update({id: peticion.params.adminId}, {alta: false})
+    peticion.addFlash('mensaje', 'Administrador desactivado')
+    return respuesta.redirect("/admin/administradores")
+  },
+
+  activarAdmin: async (peticion, respuesta) => {
+    await Admin.update({id: peticion.params.adminId}, {alta: true})
+    peticion.addFlash('mensaje', 'Administrador activado')
+    return respuesta.redirect("/admin/administradores")
+  },
+
+  activarCliente: async (peticion, respuesta) => {
+    await Cliente.update({id: peticion.params.clienteId}, {alta: true})
+    peticion.addFlash('mensaje', 'Cliente activado')
+    return respuesta.redirect("/admin/clientes")
+  },
+
+  desactivarCliente: async (peticion, respuesta) => {
+    await Cliente.update({id: peticion.params.clienteId}, {alta: false})
+    peticion.addFlash('mensaje', 'Cliente desactivado')
+    return respuesta.redirect("/admin/clientes")
+  },
+
+  dashboard: async (peticion, respuesta) => {
+    if (!peticion.session || !peticion.session.admin) {
+      peticion.addFlash('mensaje', 'Sesión inválida')
+      return respuesta.redirect("/admin/inicio-sesion")
+    }
+    let dashboard;
+    let totalClientes = await Cliente.count();
+    let totalFotos = await Foto.count();
+    let totalAdmin = await Admin.count();
+    let totalOrden = await Orden.count();
+
+    dashboard = {
+      "clientes": totalClientes,
+      "administradores": totalAdmin,
+      "fotos": totalFotos,
+      "ordenes": totalOrden
+    };
+
+    respuesta.view('pages/admin/dashboard', { dashboard })
   },
 
   cerrarSesion: async (peticion, respuesta) => {

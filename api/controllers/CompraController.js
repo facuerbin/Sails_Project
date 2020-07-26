@@ -71,6 +71,34 @@ module.exports = {
     respuesta.view('pages/mis_ordenes', { ordenes })
   },
 
+  //Admin ve oredenes de compras de clientes
+  verOrdenes: async (peticion, respuesta) => {
+    if (!peticion.session || !peticion.session.admin) {
+      return respuesta.redirect("/")
+    }
+    let ordenes = await Orden.find({ cliente: peticion.params.id }).sort('id desc')
+    respuesta.view('pages/mis_ordenes', { ordenes })
+  },
+
+  //Admin ve el detalle de una orden de compra
+  adminVerOrden: async (peticion, respuesta) => {
+    if (!peticion.session || !peticion.session.admin) {
+      return respuesta.redirect("/")
+    }
+    let orden = await Orden.findOne({ id: peticion.params.id }).populate('detalles')
+
+    if (!orden) {
+      return respuesta.redirect("/mis-ordenes")
+    }
+
+    if (orden && orden.detalles == 0) {
+      return respuesta.view('pages/orden', { orden })
+    }
+
+    orden.detalles = await OrdenDetalle.find({ orden: orden.id }).populate('foto')
+    return respuesta.view('pages/orden', { orden })
+  },
+
   ordenDeCompra: async (peticion, respuesta) => {
     if (!peticion.session || !peticion.session.cliente) {
       return respuesta.redirect("/")

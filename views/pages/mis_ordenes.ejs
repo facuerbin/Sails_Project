@@ -20,7 +20,11 @@
       <tbody>
         <% ordenes.forEach( orden => { %>
         <tr>
-          <td scope="row"><a href="/mis-ordenes/<%=orden.id%>"><%=orden.id%></a></td>
+          <% if ((session && session.admin)) { %>
+            <td scope="row"><a href="/admin/orden/<%=orden.id%>"><%=orden.id%></a></td>
+          <% } else {%>
+            <td scope="row"><a href="/mis-ordenes/<%=orden.id%>"><%=orden.id%></a></td>
+          <% }%>
           <td scope="row"><%=orden.fecha%></td>
           <td scope="row"><%=orden.total%></td>
         </tr>

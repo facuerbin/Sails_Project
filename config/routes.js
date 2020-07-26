@@ -68,6 +68,24 @@ module.exports.routes = {
 
   'GET /admin/principal': 'AdminController.principal',
 
+  'GET /admin/clientes': 'AdminController.clientes',
+
+  'GET /admin/clientes/:id': 'CompraController.verOrdenes',
+
+  'GET /admin/clientes/baja/:clienteId': 'AdminController.desactivarCliente',
+
+  'GET /admin/clientes/alta/:clienteId': 'AdminController.activarCliente',
+
+  'GET /admin/orden/:id': 'CompraController.adminVerOrden',
+
+  'GET /admin/administradores': 'AdminController.administradores',
+
+  'GET /admin/administradores/baja/:adminId': 'AdminController.desactivarAdmin',
+
+  'GET /admin/administradores/alta/:adminId': 'AdminController.activarAdmin',
+
+  'GET /admin/dashboard': 'AdminController.dashboard',
+
   'GET /admin/cerrar-sesion': 'AdminController.cerrarSesion',
 
   'GET /admin/agregar-foto': 'AdminController.agregarFoto',

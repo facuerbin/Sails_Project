@@ -9,6 +9,20 @@
     <li class="nav-item active">
       <a class="nav-link" href="/top-vendidas">Top Vendidas</a>
     </li>
+    <% if (session && session.admin) { %>
+      <li class="nav-item active">
+        <a class="nav-link" href="/admin/principal">Principal</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/admin/clientes">Clientes</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/admin/administradores">Administradores</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+      </li>
+    <% } %>
   </ul>
   <ul class="navbar-nav mr-2">
 
